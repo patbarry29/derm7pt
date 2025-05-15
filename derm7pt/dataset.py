@@ -6,7 +6,8 @@ import keras
 from keras.preprocessing.image import load_img
 from derm7pt.utils import strings2numeric
 from derm7pt.kerasutils import crop_resize_img
-
+import tensorflow as tf
+keras_utils = tf.keras.utils
 
 class Derm7PtDataset(object):
     # 'names': the name of the tag associated with the image.
@@ -113,7 +114,7 @@ class Derm7PtDataset(object):
             dir_images: A string indicating the root directory of the images.
             metadata_df: A Pandas data-frame that contains all the meta-data for each case.
             train_indexes: A list of integers that represent training indexes into metadata_df.
-            valid_indexes: 
+            valid_indexes:
             test_indexes:
             crop_amount: An integer specifying how many pixels to crop at the image border.
                 Useful if images contain a black boundary.
@@ -134,7 +135,7 @@ class Derm7PtDataset(object):
         self.check_myself()
 
         # Make sure all the indexes are in at least one fold.
-        match_indexes = np.alltrue(np.sort(np.concatenate((train_indexes, valid_indexes, test_indexes)))
+        match_indexes = np.all(np.sort(np.concatenate((train_indexes, valid_indexes, test_indexes)))
                                    == range(len(self.df)))
         if not match_indexes:
             print("Warning! The train/valid/test indexes do not match the total number of samples.")
@@ -282,7 +283,7 @@ class Derm7PtDataset(object):
 
         """
         nb_classes = len(self.get_label_nums(abbrev))
-        one_hot_labs = keras.utils.np_utils.to_categorical(labels, nb_classes)
+        one_hot_labs = keras_utils.to_categorical(labels, num_classes=nb_classes)
         return one_hot_labs
 
     def get_labels(self, data_type='all', one_hot=False):
